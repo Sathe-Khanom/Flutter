@@ -1,6 +1,9 @@
 
 
+import 'package:dream_job/jobseeker/jobseeker_profile.dart';
+import 'package:dream_job/page/admin.dart';
 import 'package:dream_job/page/registration.dart';
+import 'package:dream_job/service/authservice.dart';
 import 'package:flutter/material.dart';
 
  class Login extends StatelessWidget{
@@ -8,8 +11,7 @@ import 'package:flutter/material.dart';
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _obscurePassword = true;
-
-
+ 
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -57,11 +59,11 @@ import 'package:flutter/material.dart';
 
          ElevatedButton(
              onPressed: (){
-             String em = email.text;
-             String pass = password.text;
-             print('Email: $em, Password: $pass');
+
+                 loginUser(context);
 
              } ,
+
              child: Text(
                "Login",
                style: TextStyle(
@@ -90,6 +92,7 @@ import 'package:flutter/material.dart';
                MaterialPageRoute(builder: (context) => Registration()),
              );
            },
+
            child: Text(
              'Registration',
              style: TextStyle(
@@ -102,5 +105,49 @@ import 'package:flutter/material.dart';
      ),
    ),
    );
+
   }
+
+  Future<void> loginUser(BuildContext context) async{
+    try{
+
+      final response = await AuthService().login(email.text, password.text);
+
+      // Successful login, role-based navigation
+      final  role =await AuthService().getUserRole(); // Get role from AuthService
+
+
+      if (role == 'ADMIN') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Admin()),
+        );
+      }
+      else if (role == 'JOBSEEKER') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => JobSeekerProfile()),
+        );
+      }
+
+      else {
+        print('Unknown role: $role');
+      }
+
+
+
+
+    }
+    catch(error){
+      print('Login failed: $error');
+
+    }
+
+
+  }
+
+
+
+
+
 }
