@@ -4,13 +4,20 @@ import 'package:dream_job/jobseeker/jobseeker_profile.dart';
 import 'package:dream_job/page/admin.dart';
 import 'package:dream_job/page/registration.dart';
 import 'package:dream_job/service/authservice.dart';
+import 'package:dream_job/service/jobseeker_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
  class Login extends StatelessWidget{
 
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _obscurePassword = true;
+
+
+  final storage = new FlutterSecureStorage();
+  AuthService authService=AuthService();
+JobSeekerService jobSeekerService = JobSeekerService();
  
   @override
   Widget build(BuildContext context) {
@@ -111,10 +118,10 @@ import 'package:flutter/material.dart';
   Future<void> loginUser(BuildContext context) async{
     try{
 
-      final response = await AuthService().login(email.text, password.text);
+      final response = await authService.login(email.text, password.text);
 
       // Successful login, role-based navigation
-      final  role =await AuthService().getUserRole(); // Get role from AuthService
+      final  role =await authService.getUserRole(); // Get role from AuthService
 
 
       if (role == 'ADMIN') {
@@ -124,10 +131,16 @@ import 'package:flutter/material.dart';
         );
       }
       else if (role == 'JOBSEEKER') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => JobSeekerProfile()),
-        );
+        final profile = await jobSeekerService.getJobSeekerProfile();
+
+        if (profile != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => JobSeekerProfile(profile: profile),
+            ),
+          );
+        }
       }
 
       else {

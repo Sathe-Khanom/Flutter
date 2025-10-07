@@ -94,9 +94,16 @@ class AuthService{
 
 // flutter run -d chrome --web-port=5000
 
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
 
-
-
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
+    await prefs.remove('userRole');
+  }
 
 
 }
