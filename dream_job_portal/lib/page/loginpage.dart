@@ -2,11 +2,16 @@ import 'package:code/jobseeker/job_seeker_profile.dart';
 import 'package:code/page/adminpage.dart';
 import 'package:code/page/registrationpag.dart';
 import 'package:code/service/authservice.dart';
+import 'package:code/service/employer_service.dart';
 import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../employer/employer_profile.dart';
+
 class LoginPage extends StatelessWidget{
+
+
 
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -17,7 +22,7 @@ class LoginPage extends StatelessWidget{
 
   AuthService authService=AuthService();
   JobSeekerService jobSeekerService= JobSeekerService();
-
+  EmployerService employerService = EmployerService();
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +149,19 @@ class LoginPage extends StatelessWidget{
               context,
               MaterialPageRoute(
                 builder: (context) => JobSeekerProfile(profile: profile),
+              ),
+            );
+          }
+        }
+
+        else if (role == 'EMPLOYER') {
+          final employer = await employerService.getProfile();
+
+          if (employer != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EmployerProfile(employer: employer),
               ),
             );
           }

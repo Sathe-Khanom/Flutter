@@ -28,6 +28,7 @@ class EmployerService {
 
   // ✅ Get logged-in employer profile
   Future<Employer> getProfile() async {
+
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
 

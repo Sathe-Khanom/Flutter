@@ -6,6 +6,8 @@ import 'package:code/service/authservice.dart';
 import 'package:code/service/summary_service.dart';
 import 'package:flutter/material.dart';
 
+import '../page/job_list_page.dart';
+
 class JobSeekerProfile extends StatelessWidget {
   final Map<String, dynamic> profile;
   final AuthService _authService = AuthService();
@@ -139,6 +141,10 @@ class JobSeekerProfile extends StatelessWidget {
           _buildDrawerItem(context, Icons.work, "Applied Jobs", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyApplicationsPage()));
           }),
+          _buildDrawerItem(context, Icons.list_alt, "All Jobs", () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const JobListPage()));
+          }),
+
           _buildDrawerItem(context, Icons.book, "Education", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => EducationListScreen()));
           }),
