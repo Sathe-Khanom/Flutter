@@ -5,6 +5,7 @@ import '../entity/job.dart';
 
 
 class MyJobPage extends StatefulWidget {
+
   const MyJobPage({Key? key}) : super(key: key);
 
   @override

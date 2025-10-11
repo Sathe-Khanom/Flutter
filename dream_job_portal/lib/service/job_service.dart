@@ -1,10 +1,9 @@
 import 'dart:convert';
+import 'package:code/service/authservice.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../entity/job.dart';
-
-
 
 class JobService {
   final _storage = const FlutterSecureStorage();
@@ -19,9 +18,7 @@ class JobService {
         'Content-Type': 'application/json',
       };
     }
-    return {
-      'Content-Type': 'application/json',
-    };
+    return {'Content-Type': 'application/json'};
   }
 
   // Create job
@@ -88,10 +85,7 @@ class JobService {
   // Get job by ID
   Future<Job> getJobById(int id) async {
     final headers = await _getAuthHeaders();
-    final response = await http.get(
-      Uri.parse('$baseUrl$id'),
-      headers: headers,
-    );
+    final response = await http.get(Uri.parse('$baseUrl$id'), headers: headers);
 
     if (response.statusCode == 200) {
       return Job.fromJson(jsonDecode(response.body));
@@ -118,7 +112,9 @@ class JobService {
     if (categoryId != null) queryParams['categoryId'] = categoryId.toString();
     if (locationId != null) queryParams['locationId'] = locationId.toString();
 
-    final uri = Uri.parse('${baseUrl}search').replace(queryParameters: queryParams);
+    final uri = Uri.parse(
+      '${baseUrl}search',
+    ).replace(queryParameters: queryParams);
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
@@ -131,10 +127,18 @@ class JobService {
 
   // Get current employer's jobs
   Future<List<Job>> getMyJobs() async {
+    String? token = await AuthService().getToken();
+
     final headers = await _getAuthHeaders();
+
+    final url = Uri.parse('${baseUrl}my-jobs');
+
     final response = await http.get(
-      Uri.parse('${baseUrl}my-jobs'),
-      headers: headers,
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
     );
 
     if (response.statusCode == 200) {

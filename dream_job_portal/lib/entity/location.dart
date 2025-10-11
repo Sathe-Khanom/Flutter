@@ -1,13 +1,12 @@
 class Location {
-  final int id;
+  final int? id; // make nullable and optional
   final String name;
 
   Location({
-    required this.id,
+    this.id,          // optional id
     required this.name,
   });
 
-  // JSON থেকে Location তৈরি করার factory constructor
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
       id: json['id'],
@@ -15,10 +14,9 @@ class Location {
     );
   }
 
-  // Location কে JSON format-এ রূপান্তর
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id, // include id only if it's not null
       'name': name,
     };
   }

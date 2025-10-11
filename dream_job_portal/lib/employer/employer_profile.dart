@@ -2,6 +2,8 @@ import 'package:code/entity/employer.dart';
 import 'package:code/page/my_job_page.dart';
 import 'package:flutter/material.dart';
 
+import 'add_job_page.dart';
+
 class EmployerProfile extends StatelessWidget {
   final Employer? employer;
 
@@ -68,7 +70,11 @@ class EmployerProfile extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.add_box_outlined),
               title: const Text('Post New Job'),
-              onTap: () => Navigator.pushNamed(context, '/addjob'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddJobForm()),
+              )
+              ,
             ),
             ListTile(
               leading: const Icon(Icons.edit),
