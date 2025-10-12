@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -17,11 +18,26 @@ class EmployerService {
     required Map<String, dynamic> user,
     required Map<String, dynamic> employer,
     required File logo,
+    // pass token from login
   }) async {
     var request = http.MultipartRequest('POST', Uri.parse(_baseUrl));
 
-    request.fields['user'] = json.encode(user);
-    request.fields['employer'] = json.encode(employer);
+    request.files.add(
+      http.MultipartFile.fromString(
+        'user',
+        json.encode(user),
+        contentType: MediaType('application', 'json'),
+      ),
+    );
+
+    request.files.add(
+      http.MultipartFile.fromString(
+        'employer',
+        json.encode(employer),
+        contentType: MediaType('application', 'json'),
+      ),
+    );
+
     request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
 
     try {
@@ -39,6 +55,9 @@ class EmployerService {
       return false;
     }
   }
+
+
+
 
   // Register Employer for Flutter Web with bytes upload
   Future<bool> registerEmployerWeb({

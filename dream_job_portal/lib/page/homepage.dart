@@ -1,10 +1,16 @@
+import 'package:code/entity/category.dart';
+import 'package:code/entity/job.dart';
+import 'package:code/entity/location.dart';
 import 'package:code/page/registrationpag.dart';
+import 'package:code/service/category_service.dart';
+import 'package:code/service/job_service.dart';
+import 'package:code/service/location_service.dart';
 import 'package:flutter/material.dart';
+import 'package:code/page/job_card.dart';
+import 'package:code/entity/job.dart';
 
 import '../employer/employer_registration_page.dart';
 import 'loginpage.dart';
-
-
 
 // ================= MAIN SCREEN ====================
 class MainScreen extends StatefulWidget {
@@ -13,9 +19,65 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  late Future<List<Job>> _jobsFuture;
+
+  List<Location> locations = [];
+  late Location selectedLocation;
+  bool isLoading = true;
+
+
+  //for categoty
+  List<Category> categories = [];
+  late Category selectedCategory;
+  bool loading = true;
+
+
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
+  //category
+
+  @override
+  void initState() {
+    super.initState();
+    loadLocations();
+    loadCategories();
+    _jobsFuture = JobService().getAllJobs();
+  }
+
+  Future<void> loadLocations() async {
+    try {
+      locations = await LocationService().getAllLocations();
+      if (locations.isNotEmpty) {
+        selectedLocation = locations.first; // optional: select first by default
+      }
+    } catch (e) {
+      debugPrint('Error loading locations: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  //category
+
+  Future<void> loadCategories() async {
+    try {
+      categories = await CategoryService().getAllCategories();
+      if (categories.isNotEmpty) {
+        selectedCategory = categories.first; // optional: select first by default
+      }
+    } catch (e) {
+      debugPrint('Error loading categories: $e');
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  late final List<Widget> _pages = [
     HomeTab(),
     Center(child: Text('Company Page Coming Soon')),
     Center(child: Text('Contacts Page Coming Soon')),
@@ -56,7 +118,9 @@ class _MainScreenState extends State<MainScreen> {
               } else if (value == 'employer') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EmployerRegistration()),
+                  MaterialPageRoute(
+                    builder: (context) => EmployerRegistration(),
+                  ),
                 );
               }
             },
@@ -74,7 +138,6 @@ class _MainScreenState extends State<MainScreen> {
             ],
           ),
         ],
-
       ),
 
       drawer: Drawer(
@@ -82,9 +145,7 @@ class _MainScreenState extends State<MainScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.deepPurple,
-              ),
+              decoration: BoxDecoration(color: Colors.deepPurple),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -138,28 +199,15 @@ class _MainScreenState extends State<MainScreen> {
 
 // ================= HOME TAB ====================
 class HomeTab extends StatelessWidget {
+
+
+
+
   final TextEditingController locationController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
-  final List<Map<String, String>> jobList = [
-    {
-      'title': 'Flutter Developer',
-      'company': 'TechSoft Inc.',
-      'location': 'New York, NY',
-    },
-    {
-      'title': 'UI/UX Designer',
-      'company': 'Creative Minds',
-      'location': 'San Francisco, CA',
-    },
-    {
-      'title': 'Backend Engineer',
-      'company': 'CodeWorks',
-      'location': 'Seattle, WA',
-    },
-  ];
 
-  @override
+
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
@@ -179,98 +227,185 @@ class HomeTab extends StatelessWidget {
           // ========== SEARCH BAR ==========
           Row(
             children: [
+              // ---------- LOCATION DROPDOWN ----------
               Expanded(
-                child: TextField(
-                  controller: locationController,
-                  decoration: InputDecoration(
-                    labelText: 'Location',
-                    prefixIcon: Icon(Icons.location_on),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                  ),
+                flex: 2, // takes 2 parts of available width
+                child: FutureBuilder<List<Location>>(
+                  future: LocationService().getAllLocations(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error loading locations');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text('No locations found');
+                    } else {
+                      List<Location> locations = snapshot.data!;
+                      Location? selectedLocation = locations.first; // default
+
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return DropdownButtonFormField<Location>(
+                            value: selectedLocation,
+                            decoration: InputDecoration(
+                              labelText: 'Location',
+                              prefixIcon: Icon(Icons.location_on),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            items: locations.map((loc) {
+                              return DropdownMenuItem<Location>(
+                                value: loc,
+                                child: Text(loc.name),
+                              );
+                            }).toList(),
+                            onChanged: (Location? newValue) {
+                              setState(() {
+                                selectedLocation = newValue;
+                                locationController.text = newValue!
+                                    .name; // update controller if needed
+                              });
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
                 ),
               ),
+
               SizedBox(width: 10),
+
+              // ---------- JOB CATEGORY dropdown----------
               Expanded(
-                child: TextField(
-                  controller: categoryController,
-                  decoration: InputDecoration(
-                    labelText: 'Job Category',
-                    prefixIcon: Icon(Icons.work),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                  ),
+                flex: 2, // takes 2 parts of available width
+                child: FutureBuilder<List<Category>>(
+                  future: CategoryService().getAllCategories(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error loading categories');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text('No categories found');
+                    } else {
+                      List<Category> categories = snapshot.data!;
+                      Category? selectedCategory = categories.first; // default
+
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return DropdownButtonFormField<Category>(
+                            value: selectedCategory,
+                            decoration: InputDecoration(
+                              labelText: 'Category',
+                              prefixIcon: Icon(Icons.ac_unit_sharp),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            items: categories.map((loc) {
+                              return DropdownMenuItem<Category>(
+                                value: loc,
+                                child: Text(loc.name),
+                              );
+                            }).toList(),
+                            onChanged: (Category? newValue) {
+                              setState(() {
+                                selectedCategory = newValue;
+                                categoryController.text = newValue!
+                                    .name; // update controller if needed
+                              });
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
                 ),
               ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle search
-                  print("Searching...");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                ),
-                child: Icon(Icons.search, color: Colors.white),
-              ),
+
             ],
           ),
 
           SizedBox(height: 30),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+
+            },
+
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+
+            ),
+            child: Icon(Icons.search, color: Colors.white),
+          ),
+
+        ],
+
+      ),
+
+
+
+          SizedBox(height: 30),
 
           // ========== JOB LISTINGS ==========
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Recent Jobs',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: Colors.deepPurple,
-              ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Here are your jobs..',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: Colors.deepPurple,
             ),
           ),
-          SizedBox(height: 10),
+        ),
 
-          ListView.builder(
-            itemCount: jobList.length,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final job = jobList[index];
-              return Card(
-                elevation: 4,
-                margin: EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.deepPurple,
-                    child: Icon(Icons.work, color: Colors.white),
+        SizedBox(height: 10),
+
+        FutureBuilder<List<Job>>(
+          future: _jobsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error loading jobs: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Container(
+                padding: EdgeInsets.all(20),
+                color: Colors.blue.shade100,
+                child: Center(
+                  child: Text(
+                    'No jobs available.',
+                    style: TextStyle(color: Colors.blueGrey, fontSize: 16),
                   ),
-                  title: Text(
-                    job['title']!,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${job['company']} • ${job['location']}'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    // Handle tap
-                  },
                 ),
               );
-            },
-          ),
+            } else {
+              final jobs = snapshot.data!;
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: jobs.length,
+                itemBuilder: (context, index) {
+                  final job = jobs[index];
+                  return JobCard(job: job);
+                },
+              );
+            }
+          },
+        ),
+        SizedBox(height: 30),
         ],
       ),
     );
   }
 }
-
 // ================= FOOTER ====================
 class CustomFooter extends StatelessWidget {
   @override
@@ -297,7 +432,7 @@ class CustomFooter extends StatelessWidget {
                   SizedBox(width: 8),
                   Icon(Icons.email, size: 18, color: Colors.deepPurple),
                 ],
-              )
+              ),
             ],
           ),
         ],

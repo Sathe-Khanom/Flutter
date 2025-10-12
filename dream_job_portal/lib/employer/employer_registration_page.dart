@@ -25,7 +25,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
   final ImagePicker _picker = ImagePicker();
 
   // Controllers for User Info
-  final TextEditingController contactPersonController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -61,7 +61,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
               children: [
                 // Contact Person
                 TextFormField(
-                  controller: contactPersonController,
+                  controller: nameController,
                   decoration: InputDecoration(
                     labelText: 'Contact Person',
                     border: OutlineInputBorder(),
@@ -125,7 +125,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
 
                 // Employer Info Section
                 Text(
-                  "Employer Information",
+                  "Company Information",
                   style: GoogleFonts.lato(
                       fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
                 ),
@@ -272,13 +272,16 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
 
     // Prepare data maps
     final user = {
-      "contactPerson": contactPersonController.text.trim(),
+      "name": nameController.text.trim(),
       "email": emailController.text.trim(),
-      "phoneNumber": phoneController.text.trim(),
+      "phone": phoneController.text.trim(),
       "password": passwordController.text.trim(),
     };
 
     final employer = {
+      "contactPerson": nameController.text.trim(),
+      "email": emailController.text.trim(),
+      "phone": phoneController.text.trim(),
       "companyName": companyNameController.text.trim(),
       "companyAddress": companyAddressController.text.trim(),
       "companyWebsite": companyWebsiteController.text.trim(),
@@ -286,7 +289,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
     };
 
     try {
-      final apiService = AuthService();
+      final apiService = EmployerService();
       bool success = false;
 
       if (kIsWeb && webImage != null) {
@@ -303,6 +306,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
           employer: employer,
           logo: File(selectedImage!.path),
         );
+
       } else {
         setState(() {
           message = "Please upload a company logo.";
@@ -332,7 +336,7 @@ class _EmployerRegistrationState extends State<EmployerRegistration> {
 
   @override
   void dispose() {
-    contactPersonController.dispose();
+    nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
