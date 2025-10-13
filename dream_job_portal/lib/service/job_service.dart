@@ -106,24 +106,45 @@ class JobService {
     }
   }
 
-  // Search jobs by category and/or location
-  Future<List<Job>> searchJobs({int? categoryId, int? locationId}) async {
-    final queryParams = <String, String>{};
-    if (categoryId != null) queryParams['categoryId'] = categoryId.toString();
-    if (locationId != null) queryParams['locationId'] = locationId.toString();
+  // // Search jobs by category and/or location
+  // Future<List<Job>> searchJobs({int? categoryId, int? locationId}) async {
+  //   final queryParams = <String, String>{};
+  //   if (categoryId != null) queryParams['categoryId'] = categoryId.toString();
+  //   if (locationId != null) queryParams['locationId'] = locationId.toString();
+  //
+  //   final uri = Uri.parse(
+  //     '${baseUrl}search',
+  //   ).replace(queryParameters: queryParams);
+  //   final response = await http.get(uri);
+  //
+  //   if (response.statusCode == 200) {
+  //     final List<dynamic> data = jsonDecode(response.body);
+  //     return data.map((json) => Job.fromJson(json)).toList();
+  //   } else {
+  //     throw Exception('Job search failed');
+  //   }
+  // }
 
-    final uri = Uri.parse(
-      '${baseUrl}search',
-    ).replace(queryParameters: queryParams);
+  Future<List<Job>> searchJobs({int? categoryId, int? locationId}) async {
+    final Map<String, String> queryParams = {};
+
+    if (locationId != null) queryParams['locationId'] = locationId.toString();
+    if (categoryId != null) queryParams['categoryId'] = categoryId.toString();
+
+    final uri = Uri.parse('$baseUrl'+'search').replace(queryParameters: queryParams);
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Job.fromJson(json)).toList();
+      final List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.map((job) => Job.fromJson(job)).toList();
     } else {
-      throw Exception('Job search failed');
+      throw Exception('Failed to load jobs: ${response.statusCode}');
     }
   }
+
+
+
+
 
   // Get current employer's jobs
   Future<List<Job>> getMyJobs() async {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../entity/job.dart';
+import '../service/job_service.dart';
+import 'job_details.dart';
 
 class JobCard extends StatelessWidget {
   final Job job;
@@ -169,16 +171,32 @@ class JobCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    // Navigate to job details page if exists
+                  onPressed: () async {
+                    try {
+                      final jobDetails = await JobService().getJobById(job.id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => JobDetailsPage(job: jobDetails),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to load job details')),
+                      );
+                    }
                   },
-                  child: Text('View'),
+                  child: Text(
+                    'View',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     textStyle: TextStyle(fontSize: 14),
                   ),
                 ),
+
               ],
             ),
           ],

@@ -115,6 +115,32 @@ class _JobListPageState extends State<JobListPage> {
                         // Posted & End Date
                         Text('Posted on: $postedDate'),
                         if (endDate != null) Text('End Date: $endDate'),
+
+                        SizedBox(height: 8),
+                        // 👇 Bottom-right Apply Button
+                         ElevatedButton.icon(
+                          onPressed: () {
+                            // TODO: Implement apply functionality here
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Apply button pressed')),
+                            );
+                          },
+                          icon: Icon(Icons.send,
+                              color: Colors.white
+                          ),
+                          label: Text("Apply",
+                          style: TextStyle(
+                            color: Colors.white,)
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                        ),
+
                       ],
                     ),
                   ),
@@ -124,6 +150,10 @@ class _JobListPageState extends State<JobListPage> {
           }
         },
       ),
+
+
+
     );
+
   }
 }

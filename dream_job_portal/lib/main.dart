@@ -16,16 +16,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
 
       debugShowCheckedModeBanner: false,
-      home: MainScreen()
-      //LoginPage()
+        home: Scaffold(
+          body: HomeTab(),
+        )
 
     );
 
 
   }
-
-
-
 
 
 }
