@@ -1,7 +1,9 @@
 import 'package:code/entity/employer.dart';
+import 'package:code/page/loginpage.dart';
 import 'package:code/page/my_job_page.dart';
 import 'package:flutter/material.dart';
 
+import '../service/authservice.dart';
 import 'add_job_page.dart';
 
 class EmployerProfile extends StatelessWidget {
@@ -85,7 +87,20 @@ class EmployerProfile extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Logout', style: TextStyle(color: Colors.red)),
-              onTap: () => onLogout(context),
+              onTap: () async {
+                // Directly create an instance and call logout
+                await AuthService().logout();
+
+                // Optional: show snackbar
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Logged out')),
+                );
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>LoginPage())
+                );
+              },
             ),
           ],
         ),

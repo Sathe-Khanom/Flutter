@@ -6,6 +6,7 @@ import 'package:code/service/employer_service.dart';
 import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../employer/employer_profile.dart';
 import 'job_list_page.dart';
@@ -171,7 +172,16 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else if (role == 'JOBSEEKER') {
         final profile = await jobSeekerService.getJobSeekerProfile();
+
+
+
         if (profile != null) {
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('jobSeekerId', profile['id']);
+          print('JobSeeker ID saved: ${profile['id']}');
+
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

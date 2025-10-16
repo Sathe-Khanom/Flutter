@@ -1,3 +1,4 @@
+import 'package:code/service/authservice.dart';
 import 'package:flutter/material.dart';
 import 'package:code/entity/category.dart';
 import 'package:code/entity/job.dart';
@@ -76,7 +77,10 @@ class _HomeTabState extends State<HomeTab> {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
-            onPressed: () {
+            onPressed: () async {
+              await AuthService().logout(); // call the method
+              // After logout, navigate to login page
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginPage()));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Logged out')),
               );

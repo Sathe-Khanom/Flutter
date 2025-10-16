@@ -174,6 +174,7 @@ class JobCard extends StatelessWidget {
                   onPressed: () async {
                     try {
                       final jobDetails = await JobService().getJobById(job.id);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(

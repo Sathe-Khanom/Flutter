@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:code/entity/jobApplication.dart';
 import 'package:code/service/authservice.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApplicationService {
   static const String baseUrl = 'http://localhost:8085/api/applications/my';
@@ -29,4 +30,9 @@ class ApplicationService {
       throw Exception('Failed to load applications (${response.statusCode})');
     }
   }
+
+
+
+
+
 }

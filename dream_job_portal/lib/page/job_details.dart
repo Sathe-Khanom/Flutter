@@ -1,10 +1,49 @@
+import 'package:code/service/application_service.dart';
+import 'package:code/service/apply_service.dart';
 import 'package:flutter/material.dart';
 import '../entity/job.dart';
 
 class JobDetailsPage extends StatelessWidget {
+  // final Job job;
+  // final int jobId;
+  // final int employerId;
+
   final Job job;
 
-  const JobDetailsPage({required this.job});
+
+
+
+  const JobDetailsPage({
+    Key? key,
+    required this.job
+  }): super(key: key);
+
+
+  //apply method
+  void applyJob(BuildContext context) async {
+    final applyService = ApplyService();
+
+    try {
+      final response = await applyService.applyForJob(
+        jobId: job.id,
+        employerId: job.employerId,
+      );
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have successfully applied for this job!')),
+      );
+
+      print('Application successful: ${response.body}');
+    } catch (err) {
+      print('Application failed: $err');
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to apply. Please login first.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,12 +121,7 @@ class JobDetailsPage extends StatelessWidget {
             // 🔻 Apply Button
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Handle Apply Logic
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Apply button pressed!')),
-                  );
-                },
+                onPressed: () => applyJob(context), // ✅ Fixed!
                 icon: Icon(Icons.send, color: Colors.white),
                 label: Text(
                   'Apply Now',
@@ -98,6 +132,8 @@ class JobDetailsPage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 ),
               ),
+
+
             ),
           ],
         ),
@@ -133,4 +169,9 @@ class JobDetailsPage extends StatelessWidget {
       ),
     );
   }
+
+
+
+
+
 }
