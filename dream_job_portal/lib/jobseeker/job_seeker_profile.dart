@@ -1,6 +1,7 @@
 import 'package:code/jobseeker/education_page.dart';
 import 'package:code/jobseeker/my_Applications_Page.dart';
 import 'package:code/jobseeker/summary_page.dart';
+import 'package:code/jobseeker/training_page.dart';
 import 'package:code/page/loginpage.dart';
 import 'package:code/service/authservice.dart';
 import 'package:code/service/summary_service.dart';
@@ -148,7 +149,9 @@ class JobSeekerProfile extends StatelessWidget {
           _buildDrawerItem(context, Icons.book, "Education", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => EducationListScreen()));
           }),
-          _buildDrawerItem(context, Icons.settings, "Settings", () => Navigator.pop(context)),
+          _buildDrawerItem(context, Icons.model_training, "Training", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrainingScreen()));
+          }),
           const Divider(),
           _buildDrawerItem(context, Icons.logout, "Logout", () async {
             await _authService.logout();

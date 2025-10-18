@@ -36,7 +36,7 @@ class EducationService {
     String? token = await AuthService().getToken();
 
     final response = await http.put(
-      Uri.parse('http://localhost:8085/api/education/${education.id}'),
+      Uri.parse('http://localhost:8085/api/education/update/${education.id}'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token', // <-- add token here

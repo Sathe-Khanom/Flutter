@@ -76,7 +76,7 @@ class SummaryService {
       return false;
     }
 
-    final url = Uri.parse('$baseUrl/api/summery/$id');
+    final url = Uri.parse('$baseUrl/api/summery/update/$id');
     final response = await http.put(
       url,
       headers: {
