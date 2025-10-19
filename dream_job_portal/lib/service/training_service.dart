@@ -63,6 +63,30 @@ class TrainingService {
     }
   }
 
+  Future<Training> updateTraining(Training training) async {
+    final token = await _getToken();
+
+    final response = await http.put(
+      // Assuming your backend update endpoint is PUT /api/training/{id}
+      Uri.parse('$baseUrl${training.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(training.toJson()),
+    );
+
+    print('📡 Update Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      // Assuming the backend returns the updated Training object
+      return Training.fromJson(json.decode(response.body));
+    } else {
+      print('❌ Update failed: ${response.body}');
+      throw Exception('Failed to update training: ${response.statusCode}');
+    }
+  }
+
   Future<void> deleteTraining(int id) async {
     final token = await _getToken();
     final response = await http.delete(

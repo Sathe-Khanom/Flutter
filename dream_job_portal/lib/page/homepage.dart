@@ -1,3 +1,4 @@
+import 'package:code/page/contact_page.dart';
 import 'package:code/service/authservice.dart';
 import 'package:flutter/material.dart';
 import 'package:code/entity/category.dart';
@@ -8,6 +9,7 @@ import 'package:code/service/category_service.dart';
 import 'package:code/service/job_service.dart';
 import 'package:code/service/location_service.dart';
 import '../employer/employer_registration_page.dart';
+import 'company_page.dart';
 import 'registrationpag.dart';
 import 'loginpage.dart';
 
@@ -121,14 +123,14 @@ class _HomeTabState extends State<HomeTab> {
               leading: Icon(Icons.business),
               title: Text('Company'),
               onTap: () {
-                _navigateTo(context, EmployerRegistration());
+                _navigateTo(context, JobsByCompanyScreen());
               },
             ),
             ListTile(
               leading: Icon(Icons.contact_mail),
               title: Text('Contact'),
               onTap: () {
-                // Add contact page navigation
+                _navigateTo(context, ContactFormScreen());
               },
             ),
             ListTile(
@@ -189,11 +191,12 @@ class _HomeTabState extends State<HomeTab> {
             SizedBox(height: 20),
 
             // ========= FILTER ROW =========
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // ===== Location Dropdown =====
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: double.infinity,
                   child: FutureBuilder<List<Location>>(
                     future: LocationService().getAllLocations(),
                     builder: (context, snapshot) {
@@ -223,9 +226,7 @@ class _HomeTabState extends State<HomeTab> {
                             );
                           }).toList(),
                           onChanged: (int? newValue) {
-                            setState(() {
-                              selectedLocationId = newValue;
-                            });
+                            setState(() => selectedLocationId = newValue);
                           },
                         );
                       }
@@ -233,11 +234,11 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(height: 10),
 
                 // ===== Category Dropdown =====
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: double.infinity,
                   child: FutureBuilder<List<Category>>(
                     future: CategoryService().getAllCategories(),
                     builder: (context, snapshot) {
@@ -267,9 +268,7 @@ class _HomeTabState extends State<HomeTab> {
                             );
                           }).toList(),
                           onChanged: (int? newValue) {
-                            setState(() {
-                              selectedCategoryId = newValue;
-                            });
+                            setState(() => selectedCategoryId = newValue);
                           },
                         );
                       }
@@ -277,15 +276,20 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(height: 10),
 
-                ElevatedButton(
+                // ===== Search Button =====
+                ElevatedButton.icon(
                   onPressed: filterJobs,
+                  icon: const Icon(Icons.search),
+                  label: const Text(
+                    "Search",
+                    style: TextStyle(color: Colors.white), // text color
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   ),
-                  child: const Icon(Icons.search, color: Colors.white),
                 ),
               ],
             ),

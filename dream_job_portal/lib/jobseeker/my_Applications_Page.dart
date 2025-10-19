@@ -51,7 +51,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Employer: ${app.employerName}"),
-                        Text("Job Seeker: ${app.jobSeekerName}"),
+
                       ],
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),

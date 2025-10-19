@@ -41,7 +41,7 @@ class JobService {
   Future<List<Job>> getJobsByEmployerId(int employerId) async {
     final headers = await _getAuthHeaders();
     final response = await http.get(
-      Uri.parse('$baseUrl+employer/$employerId'),
+      Uri.parse('$baseUrl/employer/$employerId'),
       headers: headers,
     );
 
@@ -182,4 +182,20 @@ class JobService {
       throw Exception('Failed to fetch jobs by company');
     }
   }
+
+
+  // Function to fetch all jobs
+  // We need a specific endpoint to fetch jobs by company or all jobs
+  Future<List<Job>> getAllJob() async {
+  final response = await http.get(Uri.parse(baseUrl));
+
+  if (response.statusCode == 200) {
+  final List<dynamic> jsonList = json.decode(response.body);
+  return jsonList.map((json) => Job.fromJson(json)).toList();
+  } else {
+  throw Exception('Failed to load all jobs: ${response.statusCode}');
+  }
+  }
+
+
 }
