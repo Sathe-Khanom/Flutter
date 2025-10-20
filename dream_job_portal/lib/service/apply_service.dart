@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:code/entity/ApplyDTO.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,32 @@ class ApplyService {
       throw Exception('Failed to apply for job. Status: ${response.statusCode}');
     }
   }
+
+
+
+
+  Future<List<ApplyDTO>> getApplicationsForJob(int jobId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/applicant/$jobId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = json.decode(response.body);
+      return jsonList.map((json) => ApplyDTO.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load applications');
+    }
+  }
+
+
+  
 
 
 }

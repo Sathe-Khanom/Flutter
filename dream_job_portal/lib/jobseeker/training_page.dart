@@ -1,67 +1,64 @@
+import 'package:code/entity/education.dart';
+import 'package:code/service/eucation_service.dart';
 import 'package:flutter/material.dart';
 
 import '../entity/training.dart';
 import '../service/training_service.dart';
 
-
-class TrainingScreen extends StatefulWidget {
+// StatefulWidget to display a list of Education records
+class TrainingListScreen extends StatefulWidget {
   @override
-  _TrainingScreenState createState() => _TrainingScreenState();
+  _TrainingListScreenState createState() => _TrainingListScreenState();
 }
 
-class _TrainingScreenState extends State<TrainingScreen> {
-  final TrainingService _trainingService = TrainingService();
-  late Future<List<Training>> _trainingFuture;
-  List<Training> _trainings = []; // Local list to hold data
+class _TrainingListScreenState extends State<TrainingListScreen> {
+  // Future that will hold the list of educations fetched from backend
+  late Future<List<Training>> futureTraining;
 
   @override
   void initState() {
     super.initState();
-    _fetchTrainings();
-  }
-
-  Future<void> _fetchTrainings() async {
-    _trainingFuture = _trainingService.getTrainings().then((data) {
-      _trainings = data; // Store data in local list
-      return data;
-    });
-  }
-
-  // Refresh data from API
-  Future<void> _refresh() async {
-    setState(() {
-      _fetchTrainings(); // Refetching will update _trainingFuture and _trainings
-    });
+    // Fetch education data when the screen initializes
+    futureTraining = TrainingService().fetchTraining();
+    
+    print(futureTraining);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Trainings'),
-        backgroundColor: Colors.indigo, // Added aesthetic color
+        title: Text('My Training'), // Screen title
+        backgroundColor: Colors.indigo, // AppBar color
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        child: FutureBuilder<List<Training>>(
-          future: _trainingFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No trainings available.'));
-            }
+      body: FutureBuilder<List<Training>>(
+        // Listen to the future to get data asynchronously
+        future: futureTraining,
+        builder: (context, snapshot) {
+          // While waiting for data, show a loading spinner
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          // If an error occurs while fetching data
+          else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          // If the data is empty
+          else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No Training records found'));
+          }
+          // If data is successfully fetched
+          else {
+            final training = snapshot.data!;
 
-            // Data is already stored in _trainings, but we use snapshot.data to ensure initial build
-            // final trainings = snapshot.data!;
-
+            // Display list of education records
             return ListView.builder(
               padding: EdgeInsets.all(16),
-              itemCount: _trainings.length, // Use local list
+              itemCount: training.length,
               itemBuilder: (context, index) {
-                final training = _trainings[index];
+                final tra = training[index];
+
+                // Card widget for each education record
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8),
                   elevation: 4,
@@ -73,14 +70,14 @@ class _TrainingScreenState extends State<TrainingScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Left side: Training details
+                        // Left side: Education details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Title and Institute (bold text)
+                              // Level and institute (bold text)
                               Text(
-                                '${training.title} - ${training.institute}',
+                                '${tra.title} - ${tra.institute}',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -88,25 +85,17 @@ class _TrainingScreenState extends State<TrainingScreen> {
                                 ),
                               ),
                               SizedBox(height: 6), // Spacing
-                              // Duration
+                              // Board and year
                               Text(
-                                'Duration: ${training.duration}',
+                                '${tra.duration}, ${tra.description}',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[700],
                                 ),
                               ),
                               SizedBox(height: 4), // Small spacing
-                              // Description
-                              Text(
-                                'Description: ${training.description}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.green[700],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis, // Added overflow handling
-                              ),
+                              // Result
+
                             ],
                           ),
                         ),
@@ -115,29 +104,30 @@ class _TrainingScreenState extends State<TrainingScreen> {
                         IconButton(
                           icon: Icon(Icons.edit, color: Colors.orange[800]),
                           onPressed: () {
-                            // Open modal dialog to edit this training
-                            _showEditDialog(training, index);
+                            // Open modal dialog to edit this education
+                            _showEditDialog(tra, index, training);
                           },
                         ),
+
                       ],
                     ),
                   ),
                 );
               },
             );
-          },
-        ),
+          }
+        },
       ),
     );
   }
 
-  // Modal dialog to edit training in-place
-  void _showEditDialog(Training training, int index) {
+  // Modal dialog to edit education in-place
+  void _showEditDialog(Training tra, int index, List<Training> training) {
     // Controllers for each field to edit
-    TextEditingController titleController = TextEditingController(text: training.title);
-    TextEditingController instituteController = TextEditingController(text: training.institute);
-    TextEditingController durationController = TextEditingController(text: training.duration);
-    TextEditingController descriptionController = TextEditingController(text: training.description);
+    TextEditingController titleController = TextEditingController(text: tra.title);
+    TextEditingController instituteController = TextEditingController(text: tra.institute);
+    TextEditingController durationController = TextEditingController(text: tra.duration);
+    TextEditingController descriptionController = TextEditingController(text: tra.description);
 
     showDialog(
       context: context,
@@ -161,18 +151,18 @@ class _TrainingScreenState extends State<TrainingScreen> {
           ElevatedButton(
             onPressed: () async {
               // Update local object
-              training.title = titleController.text;
-              training.institute = instituteController.text;
-              training.duration = durationController.text;
-              training.description = descriptionController.text;
+              tra.title = titleController.text;
+              tra.institute = instituteController.text;
+              tra.duration = durationController.text;
+              tra.description = descriptionController.text;
 
               try {
                 // Call API to update backend
-                Training savedTraining = await _trainingService.updateTraining(training);
+                Training savedTra = await TrainingService().updateTraining(tra);
 
                 // Update UI with response from backend
                 setState(() {
-                  _trainings[index] = savedTraining;
+                  training[index] = savedTra;
                 });
 
                 Navigator.pop(context); // Close dialog
@@ -182,7 +172,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
               } catch (e) {
                 print('Update failed: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to update training')),
+                  SnackBar(content: Text('Failed to update Training')),
                 );
               }
             },

@@ -33,4 +33,10 @@ class Training {
       'description': description,
     };
   }
+
+
+  @override
+  String toString() {
+    return 'Training{id: $id, title: $title, institute: $institute, duration: $duration, description: $description}';
+  }
 }

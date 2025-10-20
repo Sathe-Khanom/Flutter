@@ -150,7 +150,7 @@ class JobSeekerProfile extends StatelessWidget {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => EducationListScreen()));
           }),
           _buildDrawerItem(context, Icons.model_training, "Training", () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrainingScreen()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrainingListScreen()));
           }),
           const Divider(),
           _buildDrawerItem(context, Icons.logout, "Logout", () async {

@@ -1,54 +1,37 @@
 import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../entity/training.dart';
+import 'authservice.dart';
 
 class TrainingService {
-  final String baseUrl = 'http://localhost:8085/api/training/'; // Update this
+  final String baseUrl = 'http://localhost:8085/api/training/';
 
-  Future<String?> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token'); // Assuming you store JWT here
-  }
-
-  Future<List<Training>> getTrainings() async {
-    final token = await _getToken();
+  // Update this
+  Future<List<Training>> fetchTraining() async {
+    String? token = await AuthService().getToken();
 
     final response = await http.get(
-      Uri.parse('${baseUrl}all'),
+      Uri.parse(baseUrl+"all"),
       headers: {
-        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // if you are using JWT auth
       },
     );
 
-    print('🔐 Token: $token');
-    print('📡 Status: ${response.statusCode}');
-    print('📦 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
-      try {
-        final body = json.decode(response.body);
-
-        if (body is List) {
-          return body.map((json) => Training.fromJson(json)).toList();
-        } else {
-          print('❗️Unexpected format: expected a JSON array.');
-          throw Exception('Invalid response format from API');
-        }
-      } catch (e) {
-        print('❌ JSON decode error: $e');
-        throw Exception('Failed to parse training data');
-      }
+      List<dynamic> body = jsonDecode(response.body);
+      return body.map((json) => Training.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load trainings: ${response.statusCode}');
+      throw Exception('Failed to load training');
     }
   }
 
 
+
+
   Future<void> addTraining(Training training) async {
-    final token = await _getToken();
+    String? token = await AuthService().getToken();
+
     final response = await http.post(
       Uri.parse('${baseUrl}add'),
       headers: {
@@ -64,11 +47,12 @@ class TrainingService {
   }
 
   Future<Training> updateTraining(Training training) async {
-    final token = await _getToken();
-
+    String? token = await AuthService().getToken();
+    print(training);
     final response = await http.put(
       // Assuming your backend update endpoint is PUT /api/training/{id}
-      Uri.parse('$baseUrl${training.id}'),
+
+      Uri.parse('${baseUrl}update/${training.id}'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -88,7 +72,8 @@ class TrainingService {
   }
 
   Future<void> deleteTraining(int id) async {
-    final token = await _getToken();
+    String? token = await AuthService().getToken();
+
     final response = await http.delete(
       Uri.parse('$baseUrl$id'),
       headers: {

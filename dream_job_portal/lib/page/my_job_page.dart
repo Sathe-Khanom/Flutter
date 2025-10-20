@@ -1,3 +1,4 @@
+import 'package:code/employer/jobApplicantsPage.dart';
 import 'package:code/service/job_service.dart';
 import 'package:flutter/material.dart';
 
@@ -66,6 +67,13 @@ class _MyJobPageState extends State<MyJobPage> {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => JobApplicantsPage(jobId: job.id),
+                        ),
+                      );
+
                       // Navigate to job detail if needed
                     },
                   ),
