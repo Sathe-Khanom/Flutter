@@ -1,5 +1,9 @@
+import 'package:code/employer/employer_profile.dart';
 import 'package:code/page/contact_page.dart';
+import 'package:code/page/job_list_page.dart';
 import 'package:code/service/authservice.dart';
+import 'package:code/service/employer_service.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 import 'package:code/entity/category.dart';
 import 'package:code/entity/job.dart';
@@ -8,7 +12,9 @@ import 'package:code/page/job_card.dart';
 import 'package:code/service/category_service.dart';
 import 'package:code/service/job_service.dart';
 import 'package:code/service/location_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../employer/employer_registration_page.dart';
+import '../jobseeker/job_seeker_profile.dart';
 import 'company_page.dart';
 import 'registrationpag.dart';
 import 'loginpage.dart';
@@ -117,6 +123,52 @@ class _HomeTabState extends State<HomeTab> {
               title: Text('Home'),
               onTap: () {
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_circle_outlined),
+              title: Text('Profile'),
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                final role =prefs.getString('userRole');
+
+                if (role == 'ADMIN') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => JobListPage()),
+                  );
+                } else if (role == 'JOBSEEKER') {
+
+                  final profile = await JobSeekerService().getJobSeekerProfile();
+
+
+
+                  if (profile != null) {
+
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JobSeekerProfile(profile: profile),
+                      ),
+                    );
+                  }
+                } else if (role == 'EMPLOYER') {
+                  final employer =  await EmployerService().getProfile();
+                  if (employer != null) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmployerProfile(employer: employer),
+                      ),
+                    );
+                  }
+                } else {
+                  print('Unknown role: $role');
+                }
+
+
+
               },
             ),
             ListTile(

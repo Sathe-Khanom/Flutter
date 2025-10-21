@@ -3,6 +3,9 @@ import 'package:code/entity/jobApplication.dart';
 import 'package:code/service/application_service.dart';
 import 'package:flutter/material.dart';
 
+import '../service/job_seeker_service.dart';
+import 'job_seeker_profile.dart';
+
 
 class MyApplicationsPage extends StatefulWidget {
   const MyApplicationsPage({Key? key}) : super(key: key);
@@ -24,7 +27,28 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Applications")),
+      appBar: AppBar(title: const Text("My Applications"),
+        leading: IconButton(
+
+          icon: const Icon(Icons.arrow_back),
+
+          onPressed: () async {
+            final profile = await JobSeekerService().getJobSeekerProfile();
+
+            if (profile != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JobSeekerProfile(profile: profile),
+                ),
+              );
+            }
+
+          },
+        ),
+
+
+      ),
 
       body: FutureBuilder<List<JobApplication>>(
         future: jobApplications,

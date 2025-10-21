@@ -121,7 +121,8 @@ class JobDetailsPage extends StatelessWidget {
             // 🔻 Apply Button
             Center(
               child: ElevatedButton.icon(
-                onPressed: () => applyJob(context), // ✅ Fixed!
+                onPressed: () => applyJob(context),
+
                 icon: Icon(Icons.send, color: Colors.white),
                 label: Text(
                   'Apply Now',

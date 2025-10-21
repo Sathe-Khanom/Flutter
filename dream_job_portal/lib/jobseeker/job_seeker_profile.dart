@@ -1,5 +1,7 @@
 import 'package:code/jobseeker/education_page.dart';
 import 'package:code/jobseeker/my_Applications_Page.dart';
+import 'package:code/jobseeker/refference_page.dart';
+import 'package:code/jobseeker/skill_page.dart';
 import 'package:code/jobseeker/summary_page.dart';
 import 'package:code/jobseeker/training_page.dart';
 import 'package:code/page/loginpage.dart';
@@ -7,7 +9,12 @@ import 'package:code/service/authservice.dart';
 import 'package:code/service/summary_service.dart';
 import 'package:flutter/material.dart';
 
+import '../page/homepage.dart';
 import '../page/job_list_page.dart';
+import 'experience_page.dart';
+import 'extracurricular_page.dart';
+import 'hobby_page.dart';
+import 'language_page.dart';
 
 class JobSeekerProfile extends StatelessWidget {
   final Map<String, dynamic> profile;
@@ -133,25 +140,48 @@ class JobSeekerProfile extends StatelessWidget {
             ),
           ),
           _buildDrawerItem(context, Icons.person, "My Profile", () => Navigator.pop(context)),
-          _buildDrawerItem(context, Icons.abc, "Summary", () async {
-            final summary = await summaryService.getJobSeekerSummary();
-            if (summary != null) {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => JobSeekerSummary(summary: summary)));
-            }
+
+          _buildDrawerItem(context, Icons.home, "Home", (){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeTab()));
           }),
+
           _buildDrawerItem(context, Icons.work, "Applied Jobs", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyApplicationsPage()));
           }),
           _buildDrawerItem(context, Icons.list_alt, "All Jobs", () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const JobListPage()));
           }),
-
-          _buildDrawerItem(context, Icons.book, "Education", () {
+          _buildDrawerItem(context, Icons.add_box, "Summary", () async {
+            final summary = await summaryService.getJobSeekerSummary();
+            if (summary != null) {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => JobSeekerSummary(summary: summary)));
+            }
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Education", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => EducationListScreen()));
           }),
-          _buildDrawerItem(context, Icons.model_training, "Training", () {
+          _buildDrawerItem(context, Icons.add_box, "Training", () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TrainingListScreen()));
           }),
+          _buildDrawerItem(context, Icons.add_box, "Experience", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ExperienceListScreen()));
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Extracurricular", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ExtracurricularListScreen()));
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Hobby", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HobbyListScreen()));
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Language", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LanguageListScreen()));
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Skill", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SkillListScreen()));
+          }),
+          _buildDrawerItem(context, Icons.add_box, "Reference", () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ReferenceListScreen()));
+          }),
+
           const Divider(),
           _buildDrawerItem(context, Icons.logout, "Logout", () async {
             await _authService.logout();

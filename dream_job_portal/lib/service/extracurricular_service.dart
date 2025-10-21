@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../entity/extracurricular.dart';
+import 'authservice.dart';
 
 class ExtracurricularService {
 
@@ -62,6 +63,31 @@ class ExtracurricularService {
       return jsonList.map((json) => Extracurricular.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load extracurriculars: ${response.body}');
+    }
+  }
+
+  Future<Extracurricular> updateExtracurricular(Extracurricular extra) async {
+    String? token = await AuthService().getToken();
+    print(extra);
+    final response = await http.put(
+      // Assuming your backend update endpoint is PUT /api/training/{id}
+
+      Uri.parse('${_baseUrl}update/${extra.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(extra.toJson()),
+    );
+
+    print('📡 Update Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      // Assuming the backend returns the updated Training object
+      return Extracurricular.fromJson(json.decode(response.body));
+    } else {
+      print('❌ Update failed: ${response.body}');
+      throw Exception('Failed to update training: ${response.statusCode}');
     }
   }
 

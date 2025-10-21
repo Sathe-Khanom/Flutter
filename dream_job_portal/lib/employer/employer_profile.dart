@@ -1,4 +1,5 @@
 import 'package:code/entity/employer.dart';
+import 'package:code/page/homepage.dart';
 import 'package:code/page/loginpage.dart';
 import 'package:code/page/my_job_page.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,17 @@ class EmployerProfile extends StatelessWidget {
             ),
 
             // ✅ Menu Items
+
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeTab()),
+              )
+              ,
+            ),
+
             ListTile(
               leading: const Icon(Icons.work_outline),
               title: const Text('My Jobs'),

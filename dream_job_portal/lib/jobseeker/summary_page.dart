@@ -1,4 +1,6 @@
 import 'package:code/jobseeker/edit_JobSeeker_Summary.dart';
+import 'package:code/jobseeker/job_seeker_profile.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 
 class JobSeekerSummary extends StatefulWidget {
@@ -23,6 +25,24 @@ class _JobSeekerSummaryState extends State<JobSeekerSummary> {
       appBar: AppBar(
         title: const Text('Job Seeker Summary'),
         centerTitle: true,
+        leading: IconButton(
+
+          icon: const Icon(Icons.arrow_back),
+
+          onPressed: () async {
+            final profile = await JobSeekerService().getJobSeekerProfile();
+
+            if (profile != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JobSeekerProfile(profile: profile),
+                ),
+              );
+            }
+
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

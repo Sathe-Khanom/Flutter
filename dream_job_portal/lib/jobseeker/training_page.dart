@@ -1,5 +1,7 @@
 import 'package:code/entity/education.dart';
+import 'package:code/jobseeker/job_seeker_profile.dart';
 import 'package:code/service/eucation_service.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 
 import '../entity/training.dart';
@@ -29,7 +31,26 @@ class _TrainingListScreenState extends State<TrainingListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Training'), // Screen title
-        backgroundColor: Colors.indigo, // AppBar color
+        backgroundColor: Colors.indigo,
+        leading: IconButton(
+
+          icon: const Icon(Icons.arrow_back),
+
+          onPressed: () async {
+            final profile = await JobSeekerService().getJobSeekerProfile();
+
+            if (profile != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JobSeekerProfile(profile: profile),
+                ),
+              );
+            }
+
+          },
+        ),
+        // AppBar color
       ),
       body: FutureBuilder<List<Training>>(
         // Listen to the future to get data asynchronously

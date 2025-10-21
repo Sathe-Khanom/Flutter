@@ -1,5 +1,7 @@
 import 'package:code/entity/education.dart';
+import 'package:code/jobseeker/job_seeker_profile.dart';
 import 'package:code/service/eucation_service.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 
 // StatefulWidget to display a list of Education records
@@ -11,6 +13,7 @@ class EducationListScreen extends StatefulWidget {
 class _EducationListScreenState extends State<EducationListScreen> {
   // Future that will hold the list of educations fetched from backend
   late Future<List<Education>> futureEducations;
+  final JobSeekerService jobSeekerService = JobSeekerService();
 
   @override
   void initState() {
@@ -21,10 +24,32 @@ class _EducationListScreenState extends State<EducationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My Education'), // Screen title
         backgroundColor: Colors.indigo, // AppBar color
+        automaticallyImplyLeading: true,
+
+        leading: IconButton(
+
+          icon: const Icon(Icons.arrow_back),
+
+          onPressed: () async {
+            final profile = await JobSeekerService().getJobSeekerProfile();
+
+            if (profile != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JobSeekerProfile(profile: profile),
+                ),
+              );
+            }
+
+          },
+        ),
+
       ),
       body: FutureBuilder<List<Education>>(
         // Listen to the future to get data asynchronously

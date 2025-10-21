@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../entity/experience.dart';
+import 'authservice.dart';
 // Ensure this path is correct
 
 class ExperienceService {
@@ -44,6 +45,33 @@ class ExperienceService {
       throw Exception('Authentication failed. Please log in again.');
     } else {
       throw Exception('Failed to add experience: ${response.body}');
+    }
+  }
+
+  //update
+
+  Future<Experience> updateExperience(Experience exp) async {
+    String? token = await AuthService().getToken();
+    print(exp);
+    final response = await http.put(
+      // Assuming your backend update endpoint is PUT /api/training/{id}
+
+      Uri.parse('${_baseUrl}update/${exp.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(exp.toJson()),
+    );
+
+    print('📡 Update Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      // Assuming the backend returns the updated Training object
+      return Experience.fromJson(json.decode(response.body));
+    } else {
+      print('❌ Update failed: ${response.body}');
+      throw Exception('Failed to update training: ${response.statusCode}');
     }
   }
 
