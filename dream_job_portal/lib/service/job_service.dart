@@ -11,7 +11,9 @@ class JobService {
 
   // Get auth headers with bearer token
   Future<Map<String, String>> _getAuthHeaders() async {
-    final token = await _storage.read(key: 'authToken');
+    String? token = await AuthService().getToken();
+
+
     if (token != null) {
       return {
         'Authorization': 'Bearer $token',
@@ -22,20 +24,51 @@ class JobService {
   }
 
   // Create job
-  Future<Job> createJob(Map<String, dynamic> data) async {
-    final headers = await _getAuthHeaders();
+  // Future<bool> createJob(Map<String, dynamic> data) async {
+  //
+  //   String? token = await AuthService().getToken();
+  //
+  //
+  //   final response = await http.post(
+  //     Uri.parse(baseUrl),
+  //     headers: {
+  //       'Authorization': 'Bearer $token',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: jsonEncode(data),
+  //   );
+  //
+  //   if (response.statusCode == 201 || response.statusCode == 200) {
+  //     return Job.fromJson(jsonDecode(response.body));
+  //   } else {
+  //     throw Exception('Failed to create job: ${response.body}');
+  //   }
+  // }
+
+
+
+  Future<bool> createJob(Map<String, dynamic> jobData) async {
+    String? token = await AuthService().getToken();
+
     final response = await http.post(
       Uri.parse(baseUrl),
-      headers: headers,
-      body: jsonEncode(data),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(jobData),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return Job.fromJson(jsonDecode(response.body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print("✅ Job Created: ${response.body}");
+      return true;
     } else {
-      throw Exception('Failed to create job: ${response.body}');
+      print("❌ Job Creation Failed: ${response.statusCode} => ${response.body}");
+      return false;
     }
   }
+
+
 
   // Get all jobs by employer ID
   Future<List<Job>> getJobsByEmployerId(int employerId) async {

@@ -41,10 +41,24 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
             itemBuilder: (context, index) {
               final app = applicants[index];
               return ListTile(
-                title: Text(app.jobSeekerName),
-                subtitle: Text(app.jobTitle),
+                leading: const Icon(Icons.person, size: 40, color: Colors.blue),
+                title: Text(
+                  app.jobSeekerName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(app.jobTitle),
+                    const SizedBox(height: 4),
+                    Text("Email: ${app.email}"),
+                    Text("Phone: ${app.phone} "),
+
+                  ],
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
-                  // navigate to detailed CV page if needed
+                  // Navigate to detailed CV page
                 },
               );
             },

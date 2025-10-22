@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       if (role == 'ADMIN') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => JobListPage()),
+          MaterialPageRoute(builder: (context) => AdminMainScreen()),
         );
       } else if (role == 'JOBSEEKER') {
         final profile = await jobSeekerService.getJobSeekerProfile();

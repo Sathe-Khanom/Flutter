@@ -17,6 +17,9 @@ class ApplyDTO {
   final String employerName;
   final int jobSeekerId;
   final String jobSeekerName;
+  final String phone;
+  final String email;
+
 
   // Optional detailed info
   final JobSeeker? jobSeeker;
@@ -37,6 +40,8 @@ class ApplyDTO {
     required this.employerName,
     required this.jobSeekerId,
     required this.jobSeekerName,
+    required this.phone,
+    required this.email,
     this.jobSeeker,
     this.educations,
     this.experiences,
@@ -57,6 +62,8 @@ class ApplyDTO {
       employerName: json['employerName'],
       jobSeekerId: json['jobSeekerId'],
       jobSeekerName: json['jobSeekerName'],
+      phone: json['phone'],
+      email: json['email'],
       jobSeeker: json['jobSeeker'] != null ? JobSeeker.fromJson(json['jobSeeker']) : null,
       educations: (json['educations'] as List?)?.map((e) => Education.fromJson(e)).toList(),
       experiences: (json['experiences'] as List?)?.map((e) => Experience.fromJson(e)).toList(),

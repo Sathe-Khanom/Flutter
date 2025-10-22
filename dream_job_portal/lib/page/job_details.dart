@@ -1,5 +1,7 @@
+import 'package:code/jobseeker/job_seeker_profile.dart';
 import 'package:code/service/application_service.dart';
 import 'package:code/service/apply_service.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 import '../entity/job.dart';
 
@@ -121,7 +123,19 @@ class JobDetailsPage extends StatelessWidget {
             // 🔻 Apply Button
             Center(
               child: ElevatedButton.icon(
-                onPressed: () => applyJob(context),
+                onPressed: () async {
+                  applyJob(context);
+
+                  final profile = await JobSeekerService().getJobSeekerProfile();
+                  if (profile != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JobSeekerProfile(profile: profile),
+                      ),
+                    );
+                  }
+                },
 
                 icon: Icon(Icons.send, color: Colors.white),
                 label: Text(
