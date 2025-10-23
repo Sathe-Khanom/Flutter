@@ -1,3 +1,4 @@
+import 'package:code/jobseeker/cv_generator.dart';
 import 'package:code/jobseeker/education_page.dart';
 import 'package:code/jobseeker/my_Applications_Page.dart';
 import 'package:code/jobseeker/refference_page.dart';
@@ -46,6 +47,25 @@ class JobSeekerProfile extends StatelessWidget {
           children: [
             _buildProfileHeader(photoUrl),
             const SizedBox(height: 24),
+
+            // *** CV GENERATION BUTTON ***
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Eikhane generateAndPrintCV function-ta call korun
+                  generateAndPrintCV(profile);
+                },
+                icon: const Icon(Icons.picture_as_pdf),
+                label: const Text("Generate CV (PDF)",
+                    style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
             _buildSectionTitle("Personal Info"),
             _buildInfoRow("Phone", profile['phone']),
             _buildInfoRow("Gender", profile['gender']),

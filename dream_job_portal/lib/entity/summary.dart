@@ -1,5 +1,5 @@
 class Summary {
-  
+
   final int id;
   final String fatherName;
   final String motherName;
@@ -39,4 +39,19 @@ class Summary {
     );
   }
 
+  // ⭐️ toJson Method (CV Generator-এর জন্য প্রয়োজনীয়)
+  Map<String, dynamic> toJson() {
+    return {
+      // 'id': id, // ID সাধারণত POST-এ লাগে না, তবে CV Map-এ রাখা যেতে পারে
+      'fatherName': fatherName,
+      'motherName': motherName,
+      'nationality': nationality,
+      'religion': religion,
+      'bloodGroup': bloodGroup,
+      'height': height,
+      'weight': weight,
+      'nid': nid,
+      'description': description,
+    };
+  }
 }

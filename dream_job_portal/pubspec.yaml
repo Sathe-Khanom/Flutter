@@ -38,7 +38,6 @@ dependencies:
   dob_input_field: ^2.0.0
   date_field: ^6.0.0
   radio_group_v2: ^3.3.1
-  google_fonts: ^6.3.2
   dio: ^5.9.0
   image_picker: ^1.2.0
   image_picker_web: ^4.0.0
@@ -49,7 +48,9 @@ dependencies:
   path: ^1.9.1
   http_parser: ^4.0.0
   mime: ^2.0.0
-
+  pdf: ^3.7.3
+  printing: ^5.0.0
+  google_fonts: ^6.3.2
 
 
 
