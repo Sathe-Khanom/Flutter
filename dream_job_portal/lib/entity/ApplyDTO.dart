@@ -75,4 +75,34 @@ class ApplyDTO {
       references: (json['references'] as List?)?.map((e) => Reference.fromJson(e)).toList(),
     );
   }
+
+
+
+  @override
+  String toString() {
+    return '''
+ApplyDTO(
+  id: $id,
+  jobId: $jobId,
+  jobTitle: $jobTitle,
+  employerId: $employerId,
+  employerName: $employerName,
+  jobSeekerId: $jobSeekerId,
+  jobSeekerName: $jobSeekerName,
+  phone: $phone,
+  email: $email,
+  jobSeeker: ${jobSeeker != null ? jobSeeker.toString() : 'null'},
+  educations: ${educations != null ? educations!.map((e) => e.toString()).toList() : '[]'},
+  experiences: ${experiences != null ? experiences!.map((e) => e.toString()).toList() : '[]'},
+  skills: ${skills != null ? skills!.map((e) => e.toString()).toList() : '[]'},
+  trainings: ${trainings != null ? trainings!.map((e) => e.toString()).toList() : '[]'},
+  extracurriculars: ${extracurriculars != null ? extracurriculars!.map((e) => e.toString()).toList() : '[]'},
+  languages: ${languages != null ? languages!.map((e) => e.toString()).toList() : '[]'},
+  hobbies: ${hobbies != null ? hobbies!.map((e) => e.toString()).toList() : '[]'},
+  references: ${references != null ? references!.map((e) => e.toString()).toList() : '[]'},
+)
+''';
+  }
+
+
 }

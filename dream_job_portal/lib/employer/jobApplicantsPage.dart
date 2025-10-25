@@ -1,6 +1,7 @@
 import 'package:code/entity/ApplyDTO.dart';
 import 'package:code/jobseeker/cv_generator.dart';
 import 'package:code/service/apply_service.dart';
+import 'package:code/service/job_seeker_service.dart';
 import 'package:flutter/material.dart';
 
 
@@ -27,17 +28,25 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   }
 
   // CV Download Logic Method
-  void _downloadCV(ApplyDTO applicantData, BuildContext context) async {
+  void _downloadCV(int id, BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Generating CV... Please wait.')),
     );
     try {
       // Step 1: ApplyDTO-কে CV Generator-এর জন্য উপযোগী Map Format-এ কনভার্ট করুন।
       // এখানে সরাসরি হেল্পার ফাংশন কল করা হয়েছে
-      final Map<String, dynamic> profileData = _convertApplyDTOToProfileMap(applicantData);
 
-      // Step 2: ডেটা দিয়ে CV জেনারেট ও ডাউনলোড শুরু
-      await generateAndPrintCV(profileData);
+
+      // This must be inside an async function
+      final jsonData = await JobSeekerService().getFullJobSeekerProfile(id);
+
+      if (jsonData != null) {
+        final Map<String, dynamic> profileData = convertFullJobSeekerJsonToProfileMap(jsonData);
+
+        // Now you can use profileData for CV generation
+        await generateAndPrintCV(profileData);
+      }
+
 
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,8 +99,10 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                 trailing: SizedBox(
                   width: 130,
                   child: ElevatedButton.icon(
+
                     onPressed: () {
-                      _downloadCV(app, context);
+
+                      _downloadCV(app.jobSeekerId, context);
                     },
                     icon: const Icon(Icons.picture_as_pdf, size: 18, color: Colors.white),
                     label: const Text(
@@ -171,5 +182,34 @@ Map<String, dynamic> _convertApplyDTOToProfileMap(ApplyDTO dto) {
     'hobbies': js.hobbies.map((e) => e.toJson()).toList(),
     // CV generator expects 'refferences'
     'refferences': js.references.map((e) => e.toJson()).toList(),
+  };
+}
+
+
+Map<String, dynamic> convertFullJobSeekerJsonToProfileMap(Map<String, dynamic> json) {
+  // Take the first summary object if exists
+  final summary = (json['summeries'] != null && (json['summeries'] as List).isNotEmpty)
+      ? json['summeries'][0]
+      : {};
+
+  return {
+    'name': json['name'] ?? 'N/A',
+    'phone': json['phone'] ?? 'N/A',
+    'user': {
+      'email': json['email'] ?? 'N/A',
+    },
+    'address': json['address'] ?? 'N/A',
+    'photo': json['photo'],
+    'dateOfBirth': json['dateOfBirth'] ?? 'N/A',
+    'gender': json['gender'] ?? 'N/A',
+    'summery': summary != null ? [summary] : [],
+    'educations': json['educations'] ?? [],
+    'experiences': json['experiences'] ?? [],
+    'skills': json['skills'] ?? [],
+    'trainings': json['trainings'] ?? [],
+    'extracurriculars': json['extracurriculars'] ?? [],
+    'languages': json['languages'] ?? [],
+    'hobbies': json['hobbies'] ?? [],
+    'refferences': json['references'] ?? [],
   };
 }

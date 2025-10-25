@@ -36,4 +36,34 @@ class JobSeekerService{
 
 
 
+  Future<Map<String, dynamic>?> getFullJobSeekerProfile(int id) async {
+    String? token = await AuthService().getToken();
+
+    if (token == null) {
+      print('No token found, please login first.');
+      return null;
+    }
+
+    final url = Uri.parse('$baseUrl/api/jobseeker/$id/full');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("Full JobSeeker Data: ${data}");
+      return data;
+    } else {
+      print('Failed to load profile: ${response.statusCode} - ${response.body}');
+      return null;
+    }
+  }
+
+
+
+
 }
